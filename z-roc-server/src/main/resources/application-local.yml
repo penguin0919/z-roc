@@ -1,0 +1,91 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      enabled: true
+      max-request-size: 100MB #最大请求文件的大小
+      max-file-size: 100MB #设置单个文件最大长度
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${db.datasource.mysql.url:127.0.0.1}:${db.datasource.mysql.port:3306}/${db.datasource.mysql.dbName}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai
+    username: ${db.datasource.mysql.username}
+    password: ${db.datasource.mysql.password}
+    #druid连接池配置
+    druid:
+      initialSize: 5 #初始化连接大小
+      minIdle: 5     #最小连接池数量
+      maxActive: 20  #最大连接池数量
+      maxWait: 60000 #获取连接时最大等待时间，单位毫秒
+      timeBetweenEvictionRunsMillis: 60000 #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      minEvictableIdleTimeMillis: 1800000  #配置一个连接在池中最小生存的时间，单位是毫秒
+      validationQuery: SELECT 1 from DUAL  #测试连接
+      testWhileIdle: true                  #申请连接的时候检测，建议配置为true，不影响性能，并且保证安全性
+      testOnBorrow: false                  #获取连接时执行检测，建议关闭，影响性能
+      testOnReturn: false                  #归还连接时执行检测，建议关闭，影响性能
+      poolPreparedStatements: false       #是否开启PSCache，PSCache对支持游标的数据库性能提升巨大，oracle建议开启，mysql下建议关闭
+      maxPoolPreparedStatementPerConnectionSize: 20 #开启poolPreparedStatements后生效
+      filters: stat,wall,log4j2   #配置扩展插件，常用的插件有=>stat:监控统计  log4j2:日志  wall:防御sql注入
+
+# mybatis-plus配置
+mybatis-plus:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.cosmosource.assistant.model.entity
+  typeEnumsPackage: com.cosmosource.assistant.core.enmus
+  global-config:
+    db-config:
+      # 逻辑删除值
+      logic-delete-value: 1
+      # 未删除的值
+      logic-not-delete-value: 0
+
+# 分页配置
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+setting:
+  whiteUrls:
+    - "/v2/api-docs"
+    - "/user/login"
+    - "/user/autoLogin"
+    - "/assistant/user/login"
+    - "/assistant/wx/code2Session"
+    - "/wx/code2Session"
+
+#小程序APPID&密钥
+wx:
+  miniprogram:
+    appid: ${wx.miniprogram.appid}
+    secret: ${wx.miniprogram.secret}
+server:
+  port: 8080
+  tomcat:
+    basedir: Download/data/temp
+  servlet:
+    context-path: /assistant
+#showSql
+logging:
+  level:
+    com.cosmosource.roc.repository: debug
+
+# swagger 开关
+swagger:
+  is:
+    enable: true
+  version: v1.0
+
+ruoyi:
+  jwtSecret: NYPSMD8ZSU4RGYXIX782XW77J74YMGVY
+  #默认1分钟
+  jwtMinutes: 1440
+  aesSecret: 98496561648451AZAHVGHXQVCXQy
+  filePath: /data/crrc-recycling/uploadFiles/
+  fileHost: http://122.200.93.22:8088/
+
+
+
+

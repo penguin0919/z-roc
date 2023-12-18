@@ -1,0 +1,69 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.test.roc.repository.RecoveryMapper">
+    <!--查询我的流水-->
+    <select id="selectMyRecoveryList" resultType="com.test.roc.model.entity.Recovery">
+        select
+            r.*,
+            m.name as meetingName,
+            c.name as commodityName
+        FROM
+            t_recovery r
+            LEFT JOIN t_meeting m ON r.meeting_id = m.id
+            LEFT JOIN t_commodity c ON r.commodity_id = c.id
+        WHERE
+            r.create_id = #{uid} AND r.type = 2 AND r.is_del = 0
+        ORDER BY r.create_time DESC
+    </select>
+
+    <!--查询跟人总积分-->
+    <select id="selectTotalIntegral" resultType="java.lang.String">
+        SELECT
+            SUM(integral_total)
+        FROM
+            t_recovery
+        WHERE
+            type = 1
+            AND is_del = 0
+            <if test="queryParams.uid != null and queryParams.uid != ''">
+                AND create_id = #{queryParams.uid}
+            </if>
+            <if test="queryParams.meetingId != null and queryParams.meetingId != ''">
+                AND meeting_id = #{queryParams.meetingId}
+            </if>
+    </select>
+
+    <!--根据会议ID查询回收列表-->
+    <select id="selectRecoveryByMeetingId" resultType="com.test.roc.model.entity.Recovery">
+        SELECT
+            r.*,
+            m.name as meetingName,
+            c.name as commodityName
+        FROM
+            t_recovery r
+            LEFT JOIN t_meeting m ON r.meeting_id = m.id
+            LEFT JOIN t_commodity c ON r.commodity_id = c.id
+        WHERE
+            r.meeting_id = #{meetingId} AND r.type = 1 AND r.is_del = 0
+        ORDER BY r.create_time DESC
+    </select>
+
+    <!--非会议类型查询列表-->
+    <select id="selectNotMeetingRecoveryList" resultType="com.test.roc.model.bo.NotMeetingRecoveryInfoBO">
+        SELECT
+            id,
+            remark,
+            integral_total,
+            img_path,
+            create_id,
+            create_time
+        FROM
+            t_recovery
+        WHERE
+            meeting_id = 'not_meeting'
+            AND type = 1
+            <if test="queryParams.remark != null and queryParams.remark != ''">
+                AND remark LIKE CONCAT('%', #{queryParams.remark}, '%')
+            </if>
+        ORDER BY create_time DESC
+    </select>
+</mapper>
